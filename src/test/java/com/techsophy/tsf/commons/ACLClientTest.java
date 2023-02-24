@@ -1,8 +1,8 @@
-package com.awgment.commons;
+package com.techsophy.tsf.commons;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.*;
-import static com.awgment.commons.TestConstants.DENY;
+import static com.techsophy.tsf.commons.TestConstants.DENY;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

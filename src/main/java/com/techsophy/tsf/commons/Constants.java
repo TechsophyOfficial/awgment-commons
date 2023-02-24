@@ -1,4 +1,4 @@
-package com.awgment.commons;
+package com.techsophy.tsf.commons;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

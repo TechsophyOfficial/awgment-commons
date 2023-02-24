@@ -1,4 +1,4 @@
-package com.awgment.commons;
+package com.techsophy.tsf.commons;
 
 import lombok.AllArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.HashMap;
 import java.util.Map;
-import static com.awgment.commons.Constants.ACCOUNTS_ACL_URL;
+import static com.techsophy.tsf.commons.Constants.ACCOUNTS_ACL_URL;
 
 @AllArgsConstructor
 public class ACLEvaluator
