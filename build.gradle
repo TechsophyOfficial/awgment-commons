@@ -3,24 +3,32 @@ plugins {
 	id 'org.springframework.boot' version '2.6.7'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'jacoco'
+	id 'signing'
+	id 'maven-publish'
+	id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
 }
 
-group = 'com.techsophy.tsf.commons'
-version = '0.0.1-SNAPSHOT'
+group = 'com.techsophy'
+version = '0.1.0'
+description = 'awgment-commons'
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
 compileJava {
 	sourceCompatibility = 11
 	targetCompatibility = 11
 }
-
+java {
+	withJavadocJar()
+	withSourcesJar()
+}
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
 }
 
-repositories {
-	mavenCentral()
-}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -30,6 +38,73 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '2.7.21'
 	testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.27.2'
+}
+publishing {
+	publications {
+		maven(MavenPublication) {
+			from(components.java)
+//			versionMapping {
+//				usage('java-api') {
+//					fromResolutionOf('runtimeClasspath')
+//				}
+//				usage('java-runtime') {
+//					fromResolutionResult()
+//				}
+//			}
+
+			pom {
+				name = 'awgment-commons'
+				description = 'awgment-commons is an open-source Java library which has common utilities used across awgment services'
+				url = 'https://github.com/TechsophyOfficial/awgment-commons'
+				inceptionYear = '2023'
+
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				developers {
+					developer {
+						id = 'techsophyofficial'
+						name = 'Awgment owners'
+						email = 'awgment@techsophy.com'
+					}
+
+					scm {
+						connection = 'scm:git:git://github.com/TechsophyOfficial/awgment-commons.git'
+						developerConnection = 'scm:git:ssh://github.com/TechsophyOfficial/awgment-commons.git'
+						url = 'https://github.com/TechsophyOfficial/awgment-commons'
+					}
+				}
+			}
+		}
+	}
+
+}
+	repositories {
+		maven {
+			def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+			def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			name = "OSSRH"
+			// url = "https://s01.oss.sonatype.org/content/repositories/"
+			credentials {
+				username = System.getenv('OSSRH_USERNAME')
+				password = System.getenv('OSSRH_PASSWORD')
+			}
+
+		}
+	}
+
+signing {
+	sign publishing.publications.maven
+}
+javadoc {
+	if (JavaVersion.current().isJava9Compatible()) {
+		options.addBooleanOption('html5', true)
+	}
 }
 
 tasks.named('test') {
