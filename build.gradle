@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'com.techsophy'
-version = '0.1.0'
+version = System.getenv('ORG_GRADLE_PROJECT_LIBRARY_VERSION')
 description = 'awgment-commons'
 repositories {
 	mavenLocal()
