@@ -31,11 +31,11 @@ configurations {
 
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	compileOnly 'org.springframework.boot:spring-boot-starter-webflux'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.springframework.boot:spring-boot-starter-test'
+	compileOnly 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '2.7.21'
 	testImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.27.2'
 }
