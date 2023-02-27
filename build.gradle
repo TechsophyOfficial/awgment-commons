@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.6.7'
-	id 'io.spring.dependency-management' version '1.1.0'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'jacoco'
 	id 'signing'
 	id 'maven-publish'
@@ -43,14 +43,14 @@ publishing {
 	publications {
 		maven(MavenPublication) {
 			from(components.java)
-//			versionMapping {
-//				usage('java-api') {
-//					fromResolutionOf('runtimeClasspath')
-//				}
-//				usage('java-runtime') {
-//					fromResolutionResult()
-//				}
-//			}
+			versionMapping {
+				usage('java-api') {
+					fromResolutionOf('runtimeClasspath')
+				}
+				usage('java-runtime') {
+					fromResolutionResult()
+				}
+			}
 
 			pom {
 				name = 'awgment-commons'
@@ -97,6 +97,17 @@ publishing {
 
 		}
 	}
+	nexusPublishing {
+        repositories {
+            sonatype {
+                //only for users registered in Sonatype after 24 Feb 2021
+                nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				username = System.getenv('OSSRH_USERNAME')
+				password = System.getenv('OSSRH_PASSWORD')
+            }
+        }
+    }
 
 signing {
 	sign publishing.publications.maven
@@ -127,9 +138,6 @@ jacocoTestReport {
 	}
 }
 
-jar{
-	enabled = false
-}
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
