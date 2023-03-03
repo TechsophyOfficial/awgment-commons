@@ -46,6 +46,6 @@ public class ACLEvaluator
 
     public ACLDecision getDelete(String token)
     {
-        return   evaluateACL(token).getRead();
+        return   evaluateACL(token).getDelete();
     }
 }
