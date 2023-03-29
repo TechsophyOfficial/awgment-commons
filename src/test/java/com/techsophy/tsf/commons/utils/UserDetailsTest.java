@@ -2,6 +2,7 @@ package com.techsophy.tsf.commons.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.techsophy.tsf.commons.acl.ResponseBaseModel;
+import com.techsophy.tsf.commons.user.UserData;
 import com.techsophy.tsf.commons.user.UserDetails;
 import com.techsophy.tsf.commons.user.UserFormDataDefinition;
 import org.junit.jupiter.api.Assertions;
@@ -18,37 +19,22 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class})
-class TokenUtilsTest
+class UserDetailsTest
 {
     @Mock
     private WebClient webClient;
     private final String gatewayURL="http://localhost:8080";
-
-    @Test
-    void getTokenFromContextWithOauth2UserTest()
-    {
-        OAuth2User mockOAuth2User= mock(OAuth2User.class);
-        Mockito.when(mockOAuth2User.getName()).thenReturn("test-name");
-        Authentication mockAuthentication= mock(Authentication.class);
-        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockOAuth2User);
-        SecurityContext mockSecurityContext= mock(SecurityContext.class);
-        Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
-        SecurityContextHolder.setContext(mockSecurityContext);
-        UserDetails tokenUtils=new UserDetails(gatewayURL);
-        Assertions.assertEquals("test-name",tokenUtils.getToken().orElseThrow());
-    }
 
     @Test
     void getTokenFromContextWithJwtTest()
@@ -81,20 +67,6 @@ class TokenUtilsTest
         Mockito.when(mockJwt.getIssuer()).thenReturn(new URL(gatewayURL));
         Authentication mockAuthentication= mock(Authentication.class);
         Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
-        SecurityContext mockSecurityContext= mock(SecurityContext.class);
-        Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
-        SecurityContextHolder.setContext(mockSecurityContext);
-        UserDetails tokenUtils=new UserDetails(gatewayURL);
-        Assertions.assertEquals(gatewayURL,tokenUtils.getIssuer().orElseThrow());
-    }
-
-    @Test
-    void getIssuerOAuth2Test()
-    {
-        OAuth2User mockOAuth2User= mock(OAuth2User.class);
-        Mockito.when(mockOAuth2User.getName()).thenReturn(gatewayURL);
-        Authentication mockAuthentication= mock(Authentication.class);
-        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockOAuth2User);
         SecurityContext mockSecurityContext= mock(SecurityContext.class);
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         SecurityContextHolder.setContext(mockSecurityContext);
@@ -219,5 +191,23 @@ class TokenUtilsTest
         responseBaseModel.setMessage("Logged In User details fetched successfully");
         ReflectionTestUtils.setField(userDetails,"webClient",webClient);
         Assertions.assertEquals("1075351150762643432", userDetails.getUserId().orElseThrow());
+    }
+
+    @Test
+    void getUserDetailsTest()
+    {
+        Map<String,Object> map=new HashMap<>();
+        map.put("userName","akhil");
+        map.put("firstName","mohanakhil");
+        map.put("lastName","denduluri");
+        map.put("mobileNumber","9999999999");
+        map.put("emailId","mohanakhil.d@techsophy.com");
+        map.put("department","developer");
+        map.put("groups",new ArrayList<>());
+        map.put("roles",new ArrayList<>());
+        UserFormDataDefinition userFormDataDefinition=new UserFormDataDefinition();
+        userFormDataDefinition.setUserData(map);
+        UserData userData=new UserData(map);
+        Assertions.assertEquals(userData,userFormDataDefinition.getUserDetails());
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class})
@@ -72,16 +73,15 @@ class ACLEvaluatorTest
         responseBaseModel.setMessage("acl validate is returned");
         when(responseSpec.bodyToMono((ParameterizedTypeReference<Object>) any())).thenReturn(Mono.just(responseBaseModel));
         ReflectionTestUtils.setField(aclEvaluator,"webClient",webClient);
-        OAuth2User mockOAuth2User= Mockito.mock(OAuth2User.class);
-        Mockito.when(mockOAuth2User.getName()).thenReturn("test-name");
-        Authentication mockAuthentication=Mockito.mock(Authentication.class);
-        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockOAuth2User);
-        SecurityContext mockSecurityContext=Mockito.mock(SecurityContext.class);
+        Jwt mockJwt= mock(Jwt.class);
+        Mockito.when(mockJwt.getTokenValue()).thenReturn("test-token");
+        Authentication mockAuthentication= mock(Authentication.class);
+        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         SecurityContextHolder.setContext(mockSecurityContext);
         Assertions.assertEquals(ACLConstants.getALLOW(),aclEvaluator.getRead(aclId,context).getDecision());
     }
-
 
     @Test
     void getUpdate_ReturnsExpectedResultTest()
@@ -126,11 +126,11 @@ class ACLEvaluatorTest
         responseBaseModel.setMessage("acl validate is returned");
         when(responseSpec.bodyToMono((ParameterizedTypeReference<Object>) any())).thenReturn(Mono.just(responseBaseModel));
         ReflectionTestUtils.setField(aclEvaluator,"webClient",webClient);
-        OAuth2User mockOAuth2User= Mockito.mock(OAuth2User.class);
-        Mockito.when(mockOAuth2User.getName()).thenReturn("test-name");
-        Authentication mockAuthentication=Mockito.mock(Authentication.class);
-        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockOAuth2User);
-        SecurityContext mockSecurityContext=Mockito.mock(SecurityContext.class);
+        Jwt mockJwt= mock(Jwt.class);
+        Mockito.when(mockJwt.getTokenValue()).thenReturn("test-token");
+        Authentication mockAuthentication= mock(Authentication.class);
+        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         SecurityContextHolder.setContext(mockSecurityContext);
         Assertions.assertEquals(ACLConstants.getDENY(),aclEvaluator.getUpdate(aclId, context).getDecision());
@@ -179,11 +179,11 @@ class ACLEvaluatorTest
         responseBaseModel.setMessage("acl validate is returned");
         when(responseSpec.bodyToMono((ParameterizedTypeReference<Object>) any())).thenReturn(Mono.just(responseBaseModel));
         ReflectionTestUtils.setField(aclEvaluator,"webClient",webClient);
-        OAuth2User mockOAuth2User= Mockito.mock(OAuth2User.class);
-        Mockito.when(mockOAuth2User.getName()).thenReturn("test-name");
-        Authentication mockAuthentication=Mockito.mock(Authentication.class);
-        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockOAuth2User);
-        SecurityContext mockSecurityContext=Mockito.mock(SecurityContext.class);
+        Jwt mockJwt= mock(Jwt.class);
+        Mockito.when(mockJwt.getTokenValue()).thenReturn("test-token");
+        Authentication mockAuthentication= mock(Authentication.class);
+        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
         SecurityContextHolder.setContext(mockSecurityContext);
         Assertions.assertEquals(ACLConstants.getALLOW(),aclEvaluator.getDelete(aclId, context).getDecision());
