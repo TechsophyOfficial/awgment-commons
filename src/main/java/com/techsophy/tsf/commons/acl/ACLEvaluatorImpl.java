@@ -1,24 +1,27 @@
 package com.techsophy.tsf.commons.acl;
 
-import com.techsophy.tsf.commons.utils.TokenUtils;
+import com.techsophy.tsf.commons.user.UserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class ACLEvaluatorImpl  implements ACLEvaluation
 {
     private final String gatewayURL;
     private final WebClient webClient;
-    private final TokenUtils tokenUtils;
+    private final UserDetails tokenUtils;
 
     public ACLEvaluatorImpl(String gatewayURL)
     {
         this.gatewayURL=gatewayURL;
         this.webClient=WebClient.builder().build(); //creates only single instance of webClient
-        this.tokenUtils=new TokenUtils();
+        this.tokenUtils=new UserDetails(gatewayURL);
     }
 
     public ACLValidate evaluateACL(String aclId,String token,Map<String,?> context)
@@ -39,7 +42,7 @@ public class ACLEvaluatorImpl  implements ACLEvaluation
 
     public ACLDecision getRead(String aclId,Map<String,?> context)
     {
-        return   evaluateACL(aclId,tokenUtils.getTokenFromContext(), context).getRead();
+        return   evaluateACL(aclId,tokenUtils.getToken().orElseThrow(), context).getRead();
     }
 
     public ACLDecision getRead(String aclId,String token,Map<String,?> context)
@@ -49,7 +52,7 @@ public class ACLEvaluatorImpl  implements ACLEvaluation
 
     public ACLDecision getUpdate(String aclId,Map<String,?> context)
     {
-        return   evaluateACL(aclId, tokenUtils.getTokenFromContext(), context).getUpdate();
+        return   evaluateACL(aclId, tokenUtils.getToken().orElseThrow(), context).getUpdate();
     }
 
     public ACLDecision getUpdate(String aclId,String token,Map<String,?> context)
@@ -59,7 +62,7 @@ public class ACLEvaluatorImpl  implements ACLEvaluation
 
     public ACLDecision getDelete(String aclId,Map<String,?> context)
     {
-        return   evaluateACL(aclId,tokenUtils.getTokenFromContext(), context).getDelete();
+        return   evaluateACL(aclId,tokenUtils.getToken().orElseThrow(), context).getDelete();
     }
 
     public ACLDecision getDelete(String aclId,String token,Map<String,?> context)
