@@ -1,6 +1,5 @@
 package com.techsophy.tsf.commons.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.techsophy.tsf.commons.acl.ResponseBaseModel;
 import com.techsophy.tsf.commons.user.UserData;
 import com.techsophy.tsf.commons.user.UserDetails;
@@ -18,6 +17,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,13 +51,13 @@ class UserDetailsTest
     }
 
     @Test
-    void getTokenFromContextNullAuthenticationTest()
+    void getTokenFromContextSecurityExceptionWithJwtTest()
     {
-        SecurityContext mockSecurityContext = mock(SecurityContext.class);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(null);
         SecurityContextHolder.setContext(mockSecurityContext);
         UserDetails tokenUtils=new UserDetails(gatewayURL);
-        Assertions.assertThrows(SecurityException.class, tokenUtils::getToken);
+        Assertions.assertThrows(NoSuchElementException.class,()->tokenUtils.getToken().orElseThrow());
     }
 
     @Test
@@ -103,7 +103,7 @@ class UserDetailsTest
     }
 
     @Test
-    void getUserIdJwtTest() throws JsonProcessingException
+    void getUserIdJwtTest()
     {
         Jwt mockJwt= mock(Jwt.class);
         Map<String,Object> claims=new HashMap<>();
@@ -136,7 +136,7 @@ class UserDetailsTest
     }
 
     @Test
-    void getUserIdJwtUserDetailsTest() throws JsonProcessingException
+    void getUserIdJwtUserDetailsTest()
     {
         Jwt mockJwt= mock(Jwt.class);
         Map<String,Object> claims=new HashMap<>();
@@ -191,6 +191,26 @@ class UserDetailsTest
         responseBaseModel.setMessage("Logged In User details fetched successfully");
         ReflectionTestUtils.setField(userDetails,"webClient",webClient);
         Assertions.assertEquals("1075351150762643432", userDetails.getUserId().orElseThrow());
+    }
+
+    @Test
+    void getUserIdJwtUserDetailsWebclientExceptionTest()
+    {
+        Jwt mockJwt= mock(Jwt.class);
+        Map<String,Object> claims=new HashMap<>();
+        Mockito.when(mockJwt.getClaims()).thenReturn(claims);
+        Mockito.when(mockJwt.getTokenValue()).thenReturn("test-token");
+        Authentication mockAuthentication= mock(Authentication.class);
+        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
+        Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
+        SecurityContextHolder.setContext(mockSecurityContext);
+        UserDetails userDetails =new UserDetails(gatewayURL);
+        when(webClient.get()).thenThrow(WebClientResponseException.class);
+        UserFormDataDefinition userFormDataDefinition=new UserFormDataDefinition();
+        userFormDataDefinition.setUserId("101");
+        ReflectionTestUtils.setField(userDetails,"webClient",webClient);
+        Assertions.assertThrows(NoSuchElementException.class,()->userDetails.getUserId().get());
     }
 
     @Test
