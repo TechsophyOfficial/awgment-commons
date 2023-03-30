@@ -117,7 +117,7 @@ public class UserDetails
             String result= webClient
                     .get()
                     .uri(gatewayURL + ACCOUNT_URL + "/loggedIn")
-                    .header(HttpHeaders.AUTHORIZATION,getToken().orElseThrow())
+                    .header(HttpHeaders.AUTHORIZATION,"Bearer "+getToken().orElseThrow())
                     .retrieve()
                     .bodyToMono(String.class)
                     .blockOptional()
