@@ -7,5 +7,5 @@ import java.util.Map;
 public class ACLDecision
 {
     private final String decision;
-    private final Map<String,String> additionalDetails;
+    private final Map<String,Object> additionalDetails;
 }
