@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 @Data
-public class LikeOperation extends FilterOperation
+public class LikeOperation implements FilterOperation
 {
     String like;
 
@@ -16,6 +16,6 @@ public class LikeOperation extends FilterOperation
 
     @Override
     public Object getCriteria(String field, QueryBuilder builder) {
-        builder.likeQuery(field,this);
+        return builder.likeQuery(field,this);
     }
 }

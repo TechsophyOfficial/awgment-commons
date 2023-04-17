@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
 
 @Data
-public class InOperation extends FilterOperation
+public class InOperation implements FilterOperation
 {
     List<Object> in;
 
@@ -19,6 +19,6 @@ public class InOperation extends FilterOperation
 
     @Override
     public Object getCriteria(String field, QueryBuilder builder) {
-        builder.inQuery(field,this);
+        return builder.inQuery(field,this);
     }
 }

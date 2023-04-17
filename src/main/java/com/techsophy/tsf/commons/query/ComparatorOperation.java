@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
-public class ComparatorOperation extends FilterOperation
+public class ComparatorOperation implements FilterOperation
 {
     private Number lt;
     private Number lte;
@@ -34,7 +34,7 @@ public class ComparatorOperation extends FilterOperation
     }
 
     @Override
-    public Object getCriteria(String field, QueryBuilder<T> builder) {
+    public Object getCriteria(String field, QueryBuilder builder) {
 
         return builder.comparatorQuery(field, this );
     }

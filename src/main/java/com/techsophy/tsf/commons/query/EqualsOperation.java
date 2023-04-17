@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 @Data
-public class EqualsOperation extends FilterOperation
+public class EqualsOperation implements FilterOperation
 {
     private Object equals;
 
