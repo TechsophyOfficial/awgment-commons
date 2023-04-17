@@ -36,7 +36,7 @@ class UserDetailsTest
 {
     @Mock
     private WebClient webClient;
-    private final String gatewayURL="http://localhost:8082";
+    private final String gatewayURL="http://localhost:8080";
 
     @Test
     void getTokenFromContextWithJwtTest()
