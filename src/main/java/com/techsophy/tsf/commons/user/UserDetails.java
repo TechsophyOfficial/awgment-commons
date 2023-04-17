@@ -22,6 +22,8 @@ public class UserDetails
     private final WebClient webClient;
     private final String gatewayURL;
     private final ObjectMapper objectMapper;
+    private static final ThreadLocal<String> USER_ID = new ThreadLocal<>();
+
 
     public UserDetails(String gatewayURL)
     {
@@ -87,27 +89,30 @@ public class UserDetails
 
     public Optional<String> getUserId()
     {
-        if(getToken().isPresent())
-        {
-            try{
-                Object principal =getPrincipal();
-                Jwt jwt = (Jwt) principal;
-                Map<String,Object> claims=jwt.getClaims();
-                if(claims.containsKey("userId"))
+        try {
+            Optional<String> userId = Optional.ofNullable(USER_ID.get());
+            if(userId.isEmpty() && getToken().isPresent())
                 {
-                    return Optional.ofNullable(String.valueOf(claims.get("userId")));
-                }
-                else
-                {
-                    return Optional.ofNullable(getUserDetails().getUserId());
-                }
+                    Object principal = getPrincipal();
+                    Jwt jwt = (Jwt) principal;
+                    Map<String, Object> claims = jwt.getClaims();
+                    if (claims.containsKey("userId")) {
+                        userId = Optional.ofNullable(String.valueOf(claims.get("userId")));
+                    }
+                    else {
+                        userId = Optional.ofNullable(getUserDetails().getUserId());
+                    }
+                    if(userId.isPresent())
+                    {
+                        USER_ID.set(userId.get());
+                    }
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            return userId;
         }
-        return Optional.empty();
+        catch (Exception e)
+        {
+            return Optional.empty();
+        }
     }
 
     public UserFormDataDefinition getUserDetails()
@@ -130,5 +135,8 @@ public class UserDetails
             e.printStackTrace();
            throw new UserDetailsNotFoundException("error getting userDetails",e.getMessage());
         }
+    }
+    public void unload() {
+        USER_ID.remove(); // Compliant
     }
 }
