@@ -13,4 +13,9 @@ public class EqualsOperation extends FilterOperation
     {
        return Criteria.where(field).is(this.equals);
     }
+
+    @Override
+    public Object getCriteria(String field, QueryBuilder builder) {
+        return builder.equalsQuery(field,this);
+    }
 }

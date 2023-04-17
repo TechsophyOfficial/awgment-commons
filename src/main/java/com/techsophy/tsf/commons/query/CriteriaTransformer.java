@@ -2,8 +2,8 @@ package com.techsophy.tsf.commons.query;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 
-public interface MongoCriteriaTransformer
+public interface CriteriaTransformer<T>
 {
-    Criteria getCriteria(String field);
+    T getCriteria(String field, QueryBuilder<T> builder);
 
 }

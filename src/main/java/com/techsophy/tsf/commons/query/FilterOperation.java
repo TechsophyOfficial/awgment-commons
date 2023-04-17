@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ComparatorOperation.class),
         @JsonSubTypes.Type(value = InOperation.class),
         @JsonSubTypes.Type(value = LikeOperation.class)})
-public abstract class FilterOperation implements   MongoCriteriaTransformer
+public abstract interface FilterOperation implements CriteriaTransformer
 {
 
 

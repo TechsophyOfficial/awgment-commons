@@ -13,4 +13,9 @@ public class LikeOperation extends FilterOperation
     {
         return Criteria.where(field).regex(this.like);
     }
+
+    @Override
+    public Object getCriteria(String field, QueryBuilder builder) {
+        builder.likeQuery(field,this);
+    }
 }

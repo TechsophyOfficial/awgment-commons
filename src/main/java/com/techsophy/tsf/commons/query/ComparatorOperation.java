@@ -15,6 +15,9 @@ public class ComparatorOperation extends FilterOperation
     private Number gt;
     private Number gte;
 
+
+
+
 //    @Override
     public Criteria getCriteria(String field)
     {
@@ -28,5 +31,11 @@ public class ComparatorOperation extends FilterOperation
                                 )
                                 .filter(Objects::nonNull).collect(Collectors.toList())
                 );
+    }
+
+    @Override
+    public Object getCriteria(String field, QueryBuilder<T> builder) {
+
+        return builder.comparatorQuery(field, this );
     }
 }

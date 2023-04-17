@@ -15,4 +15,10 @@ public class InOperation extends FilterOperation
     {
         return Criteria.where(field).in(this.in);
     }
+
+
+    @Override
+    public Object getCriteria(String field, QueryBuilder builder) {
+        builder.inQuery(field,this);
+    }
 }
