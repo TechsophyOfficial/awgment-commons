@@ -1,9 +1,13 @@
 package com.techsophy.tsf.commons.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techsophy.tsf.commons.acl.ResponseBaseModel;
 import com.techsophy.tsf.commons.user.UserData;
 import com.techsophy.tsf.commons.user.UserDetails;
 import com.techsophy.tsf.commons.user.UserFormDataDefinition;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +36,7 @@ class UserDetailsTest
 {
     @Mock
     private WebClient webClient;
-    private final String gatewayURL="http://localhost:8081";
+    private final String gatewayURL="http://localhost:8082";
 
     @Test
     void getTokenFromContextWithJwtTest()
@@ -55,7 +59,7 @@ class UserDetailsTest
         Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(null);
         SecurityContextHolder.setContext(mockSecurityContext);
         UserDetails tokenUtils=new UserDetails(gatewayURL);
-        Assertions.assertThrows(NoSuchElementException.class,()->tokenUtils.getToken());
+        Assertions.assertEquals(Optional.empty(),tokenUtils.getToken());
     }
 
     @Test
@@ -227,5 +231,60 @@ class UserDetailsTest
         userFormDataDefinition.setUserData(map);
         UserData userData=new UserData(map);
         Assertions.assertEquals(userData,userFormDataDefinition.getUserDetails());
+    }
+    @Test
+    void getUserDetailsWrapperTest() throws JSONException, JsonProcessingException {
+        Jwt mockJwt= mock(Jwt.class);
+        Map<String,Object> claims=new HashMap<>();
+//        Mockito.when(mockJwt.getClaims()).thenReturn(claims);
+        Mockito.when(mockJwt.getTokenValue()).thenReturn("test-token");
+        Authentication mockAuthentication= mock(Authentication.class);
+        Mockito.when(mockAuthentication.getPrincipal()).thenReturn(mockJwt);
+        SecurityContext mockSecurityContext= mock(SecurityContext.class);
+        Mockito.when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
+        SecurityContextHolder.setContext(mockSecurityContext);
+        UserDetails userDetails =new UserDetails(gatewayURL);
+        WebClient.RequestHeadersUriSpec requestHeadersUriSpecMock = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec requestHeadersSpecMock = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpecMock = mock(WebClient.ResponseSpec.class);
+        when(webClient.get()).thenReturn(requestHeadersUriSpecMock);
+        when(requestHeadersUriSpecMock.uri(anyString())).thenReturn(requestHeadersSpecMock);
+        when(requestHeadersSpecMock.header(any(), anyString())).thenReturn(requestHeadersSpecMock);
+        when(requestHeadersSpecMock.retrieve()).thenReturn(responseSpecMock);
+        WebClient.ResponseSpec responseSpec= mock(WebClient.ResponseSpec.class);
+        when(requestHeadersSpecMock.retrieve()).thenReturn(responseSpec);
+        String expectedResponse="{\n" +
+                "    \"data\": {\n" +
+                "        \"userData\": {\n" +
+                "            \"userName\": \"mohanakhil\",\n" +
+                "            \"firstName\": \"mohanakhil\",\n" +
+                "            \"lastName\": \"denduluri\",\n" +
+                "            \"mobileNumber\": \"(123) 456-7899\",\n" +
+                "            \"emailId\": \"mohanakhil.d@techsophy.com\",\n" +
+                "            \"department\": \"developer\",\n" +
+                "            \"groups\": [\n" +
+                "                \"DevOps\",\n" +
+                "                \"camunda-admin\"\n" +
+                "            ],\n" +
+                "            \"roles\": []\n" +
+                "        },\n" +
+                "        \"userId\": \"1075351150762643432\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"createdById\": \"867402957087965184\",\n" +
+                "        \"createdOn\": \"2023-02-15T09:41:33.394Z\",\n" +
+                "        \"updatedById\": \"867402957087965184\",\n" +
+                "        \"updatedOn\": \"2023-02-15T09:41:33.407Z\"\n" +
+                "    },\n" +
+                "    \"success\": true,\n" +
+                "    \"message\": \"Logged In User details fetched successfully\"\n" +
+                "}";
+        when(responseSpec.bodyToMono((String.class))).thenReturn(Mono.just(expectedResponse));
+        JSONObject jsonObject = new JSONObject(expectedResponse);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResponseBaseModel responseBaseModel = objectMapper.readValue(expectedResponse,ResponseBaseModel.class);
+        UserFormDataDefinition userFormDataDefinition = new UserFormDataDefinition();
+        userFormDataDefinition.setUserData((Map<String, Object>) responseBaseModel.getData());
+        ReflectionTestUtils.setField(userDetails,"webClient",webClient);
+        Assertions.assertEquals(userFormDataDefinition.getUserData().get("userData"),userDetails.getUserDetails().getUserData());
     }
 }
