@@ -1,7 +1,7 @@
 package com.techsophy.tsf.commons.query;
 
-public interface CriteriaTransformer<T>
+public interface CriteriaTransformer
 {
-    T getCriteria(String field, QueryBuilder<T> builder);
+     <T> T getCriteria(String field, QueryBuilder<T> builder);
 
 }

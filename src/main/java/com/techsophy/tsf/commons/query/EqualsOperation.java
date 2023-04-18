@@ -8,7 +8,7 @@ public class EqualsOperation implements FilterOperation
     private Object equals;
 
     @Override
-    public Object getCriteria(String field, QueryBuilder builder) {
+    public <T> T getCriteria(String field, QueryBuilder<T> builder) {
         return builder.equalsQuery(field,this);
     }
 }

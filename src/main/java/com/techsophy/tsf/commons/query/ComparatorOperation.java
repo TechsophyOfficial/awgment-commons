@@ -11,7 +11,7 @@ public class ComparatorOperation implements FilterOperation
 
 
     @Override
-    public Object getCriteria(String field, QueryBuilder builder) {
+    public <T> T getCriteria(String field, QueryBuilder<T> builder) {
 
         return builder.comparatorQuery(field, this );
     }

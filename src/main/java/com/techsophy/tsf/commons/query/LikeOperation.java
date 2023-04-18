@@ -8,7 +8,7 @@ public class LikeOperation implements FilterOperation
     String like;
 
     @Override
-    public Object getCriteria(String field, QueryBuilder builder) {
+    public <T> T getCriteria(String field, QueryBuilder<T> builder) {
         return builder.likeQuery(field,this);
     }
 }
