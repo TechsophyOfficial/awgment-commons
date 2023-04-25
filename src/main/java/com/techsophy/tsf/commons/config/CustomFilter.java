@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import static com.techsophy.tsf.commons.constants.CommonConstants.AUTHORIZATION;
 
 
-@Configuration
+
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomFilter implements Filter
 {

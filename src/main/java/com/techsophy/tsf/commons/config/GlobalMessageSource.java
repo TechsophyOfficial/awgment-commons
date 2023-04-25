@@ -10,7 +10,7 @@ import java.util.Locale;
 import static com.techsophy.tsf.commons.constants.CommonConstants.ERROR;
 
 
-@Component
+
 @AllArgsConstructor()
 public class GlobalMessageSource
 {

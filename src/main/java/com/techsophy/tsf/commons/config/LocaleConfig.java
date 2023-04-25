@@ -13,7 +13,7 @@ import java.util.Locale;
 import static com.techsophy.tsf.commons.constants.CommonConstants.*;
 import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 
-@Configuration
+
 public class LocaleConfig extends AcceptHeaderLocaleResolver implements WebMvcConfigurer
 {
     @Override

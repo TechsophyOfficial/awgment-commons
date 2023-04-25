@@ -10,7 +10,7 @@ import java.util.List;
 import static com.techsophy.tsf.commons.constants.CommonConstants.*;
 
 
-@Configuration
+
 public class ApplicationConfig
 {
     String gatewayUrl;

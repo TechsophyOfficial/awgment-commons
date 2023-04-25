@@ -48,8 +48,7 @@ class JWTRoleConverterTest
         list.add("augmnt");
         Jwt jwt= new Jwt("1", Instant.now(),null,Map.of("abc","abc"),Map.of("abc","abc"));
         WebClient webClient= WebClient.builder().build();
-        when(webClientWrapper.createWebClient(any())).thenReturn(webClient);
-        when(webClientWrapper.webclientRequest(any(), anyString(), anyString(), any())).thenReturn("abc");
+        when(webClientWrapper.webclientRequest( anyString(), anyString(), any())).thenReturn("abc");
         when(mockObjectMapper.readValue("abc",Map.class)).thenReturn(map);
         when(mockObjectMapper.convertValue("abc", List.class)).thenReturn(List.of());
         Collection grantedAuthority =  jwtRoleConverter.convert(jwt);
@@ -66,8 +65,7 @@ class JWTRoleConverterTest
         list.add("augmnt");
         Jwt jwt= new Jwt("1", Instant.now(),null,Map.of("abc","abc"),Map.of("abc","abc"));
         WebClient webClient= WebClient.builder().build();
-        when(webClientWrapper.createWebClient(any())).thenReturn(webClient);
-        when(webClientWrapper.webclientRequest(any(), anyString(), anyString(), any())).thenReturn("");
+        when(webClientWrapper.webclientRequest(anyString(), anyString(), any())).thenReturn("");
         Assertions.assertThrows(AccessDeniedException.class, () -> jwtRoleConverter.convert(jwt));
     }
 
@@ -81,8 +79,7 @@ class JWTRoleConverterTest
         list.add("augmnt");
         Jwt jwt= new Jwt("1", Instant.now(),null,Map.of("abc","abc"),Map.of("abc","abc"));
         WebClient webClient= WebClient.builder().build();
-        when(webClientWrapper.createWebClient(any())).thenReturn(webClient);
-        when(webClientWrapper.webclientRequest(any(), anyString(), anyString(), any())).thenReturn("abc");
+        when(webClientWrapper.webclientRequest(anyString(), anyString(), any())).thenReturn("abc");
         when(mockObjectMapper.readValue("abc",Map.class)).thenReturn(map);
         //when(mockObjectMapper.convertValue("abc", List.class)).thenReturn(List.of());
         Collection grantedAuthority =  jwtRoleConverter.convert(jwt);

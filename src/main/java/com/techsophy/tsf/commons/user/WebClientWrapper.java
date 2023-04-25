@@ -18,25 +18,18 @@ import java.util.Objects;
 import static com.techsophy.tsf.commons.constants.CommonConstants.*;
 import static com.techsophy.tsf.commons.constants.ErrorConstants.SERVICE_NOT_AVAILABLE;
 
-@Service
+
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class WebClientWrapper {
     private final GlobalMessageSource globalMessageSource;
     private final ObjectMapper objectMapper;
-
-    public WebClient createWebClient(String token)
-    {
-        return WebClient.builder()
-                .defaultHeader(AUTHORIZATION, BEARER + token)
-                .defaultHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .build();
-    }
+    private final WebClient webClient;
 
     @CircuitBreaker(name = SERVICE, fallbackMethod = "availableMethod")
-    public String webclientRequest(WebClient client, String url, @NotBlank String requestType, Object data)
+    public String webclientRequest(String url, @NotBlank String requestType, Object data)
     {
         if (requestType.equalsIgnoreCase(GET)) {
-            return Objects.requireNonNull(client.get()
+            return Objects.requireNonNull(webClient.get()
                             .uri(url)
                             .retrieve()
                             .onStatus(HttpStatus::isError, clientResponse -> {
@@ -50,7 +43,7 @@ public class WebClientWrapper {
         } else {
             if (requestType.equalsIgnoreCase(DELETE)) {
                 if (data == null) {
-                    return Objects.requireNonNull(client.method(HttpMethod.DELETE)
+                    return Objects.requireNonNull(webClient.method(HttpMethod.DELETE)
                                     .uri(url)
                                     .retrieve()
                                     .onStatus(HttpStatus::isError, clientResponse -> {
@@ -62,7 +55,7 @@ public class WebClientWrapper {
                             .bodyToMono(String.class)
                             .block();
                 } else {
-                    return Objects.requireNonNull(client.method(HttpMethod.DELETE)
+                    return Objects.requireNonNull(webClient.method(HttpMethod.DELETE)
                                     .uri(url)
                                     .bodyValue(data)
                                     .retrieve()
@@ -77,7 +70,7 @@ public class WebClientWrapper {
                 }
             }
             if (requestType.equalsIgnoreCase(PUT)) {
-                return Objects.requireNonNull(client.put()
+                return Objects.requireNonNull(webClient.put()
                                 .uri(url)
                                 .bodyValue(data)
                                 .retrieve()
@@ -90,7 +83,7 @@ public class WebClientWrapper {
                         .bodyToMono(String.class)
                         .block();
             }
-            return Objects.requireNonNull(client.post()
+            return Objects.requireNonNull(webClient.post()
                             .uri(url)
                             .bodyValue(data)
                             .retrieve()

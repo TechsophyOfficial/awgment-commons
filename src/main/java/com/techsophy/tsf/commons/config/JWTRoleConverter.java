@@ -9,12 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,11 +28,12 @@ import static com.techsophy.tsf.commons.constants.ErrorConstants.TOKEN_VERIFICAT
 
 
 @Slf4j
-@Component
+
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class JWTRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>>
 {
     private final WebClientWrapper webClientWrapper;
+    private final WebClient webClient;
     private final ObjectMapper objectMapper;
     private final TokenUtils tokenUtils;
     private final String keyCloakApi;
@@ -44,8 +46,7 @@ public class JWTRoleConverter implements Converter<Jwt, Collection<GrantedAuthor
         List<String> totalList;
         List<String> awgmentRolesList=new ArrayList<>();
         String token= jwt.getTokenValue();
-        var client = webClientWrapper.createWebClient(token);
-        String userInfoResponse = webClientWrapper.webclientRequest(client,keyCloakApi+tokenUtils.getIssuerFromToken(jwt.getTokenValue())+USER_INFO_URL,GET,null);
+        String userInfoResponse = webClientWrapper.webclientRequest(keyCloakApi+tokenUtils.getIssuerFromToken(jwt.getTokenValue())+USER_INFO_URL,GET,null);
         if(userInfoResponse.isEmpty())
         {
             logger.info(TOKEN_VERIFICATION_FAILED);

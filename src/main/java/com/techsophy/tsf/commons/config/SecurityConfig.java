@@ -10,9 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 import javax.servlet.http.HttpServletRequest;
 
-@Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor()
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {

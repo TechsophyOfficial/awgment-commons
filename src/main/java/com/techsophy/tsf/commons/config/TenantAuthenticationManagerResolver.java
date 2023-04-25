@@ -18,7 +18,6 @@ import static com.techsophy.tsf.commons.constants.CommonConstants.AUTHORIZATION;
 
 
 @RefreshScope
-@Component
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class TenantAuthenticationManagerResolver implements AuthenticationManagerResolver<HttpServletRequest>
 {

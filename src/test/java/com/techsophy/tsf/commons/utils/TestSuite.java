@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -29,7 +30,7 @@ public class TestSuite {
     @BeforeAll
     public void beforeTest() {
         webClient = WebClient.create("http://localhost:9292");
-        webClientWrapper1 =new WebClientWrapper(globalMessageSource,objectMapper);
+        webClientWrapper1 =new WebClientWrapper(globalMessageSource,objectMapper,webClient);
         wireMockServer = new WireMockServer(9292);
         wireMockServer.start();
         WireMock.configureFor("localhost",wireMockServer.port());
@@ -43,6 +44,22 @@ public class TestSuite {
         );
         stubFor(get("/v1/notification/file").willReturn(aResponse()
                 .withStatus(400)
+                .withBodyFile("resources/testdata/token.txt"))
+        );
+        stubFor(delete("/v1/notification/file").willReturn(aResponse()
+                .withStatus(400)
+                .withBodyFile("resources/testdata/token.txt"))
+        );
+        stubFor(delete("/v1/notification/file").willReturn(aResponse()
+                .withStatus(404)
+                .withBodyFile("resources/testdata/token.txt"))
+        );
+        stubFor(put("/v1/notification/file").willReturn(aResponse()
+                .withStatus(400)
+                .withBodyFile("resources/testdata/token.txt"))
+        );
+        stubFor(put("/v1/notification/file").willReturn(aResponse()
+                .withStatus(404)
                 .withBodyFile("resources/testdata/token.txt"))
         );
         stubFor(get(urlPathEqualTo("/v1/users")).willReturn(aResponse()
