@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: account-app
+  servlet:
+    multipart:
+      max-file-size: 20MB
+server:
+  port : 8081
+keycloak:
+  issuer-uri: https://keycloak-tsplatform.techsophy.com/auth/realms/
+database:
+  url:  mongodb+srv://nandini:Nandini%40abc123@cluster0.sp7dq.mongodb.net/test
+  name: techsophy-platform
+
+user:
+  management:
+    keycloak-api: https://keycloak-tsplatform.techsophy.com/auth/admin/realms/
+    user-api: /users
+    roles-api: /roles
+    groups-api: /groups
+    count-api: /count
+
+default:
+  pagelimit: 5
+
+clients: camunda-identity-service,ticketing-system
+
+gateway:
+  uri: https://api-gateway.techsophy.com/api
+
+springdoc:
+  version: '@springdoc.version@'
+  api-docs:
+    path: /accounts/v3/api-docs
+
+email:
+  validity: ${EMAIL_VALIDITY:86400}
+otp:
+  length: ${OTP_LENGTH:6}
+  validity: ${OTP_VALIDITY:180}
+USER:
+  REGISTRATION:
+    FAILURE:
+      EMAIL:
+        TO: venkataramana.g@techsophy.com
+        SUBJECT: hello
+
+
+notification:
+  enabled: true
+  email:
+    query: "mutation SEND_EMAIL($mailMessage: MailMessage!) {\n  sendMail(input: $mailMessage)\n}\n"
+  sms:
+    query: "mutation SEND_SMS($smsMessage: smsMessage!) {\n  sendSMS(input: $smsMessage)\n}\n"
+
+mongock:
+  migration-scan-package: com.techsophy.tsf.account.changelog
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        evenrConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 3s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
